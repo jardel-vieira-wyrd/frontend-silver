@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import ApiHealthCheck from "./components/ApiHealthCheck";
 
 function App() {
   return (
@@ -12,6 +13,11 @@ function App() {
           <Button className="text-xl py-6 px-8 w-64">Sign In</Button>
         </div>
       </main>
+      <footer className="w-full bg-gray-100 border-t-2 border-gray-300 p-4 mt-12">
+        <div className="container mx-auto px-4">
+          <ApiHealthCheck />
+        </div>
+      </footer>
     </div>
   )
 }
