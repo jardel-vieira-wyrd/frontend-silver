@@ -1,31 +1,50 @@
-import axios, { AxiosInstance } from 'axios';
+import axios from 'axios';
+import { useAuthStore } from '../stores/authStore';
 
-const API_BASE_URL = import.meta.env.API_BASE_URL || 'http://localhost:3000';
+const API_BASE_URL = 'http://localhost:3000';
 
-const api: AxiosInstance = axios.create({
+const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-export const setAuthToken = (token: string) => {
-  api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-};
-
-export const clearAuthToken = () => {
-  delete api.defaults.headers.common['Authorization'];
-};
-
-export const checkApiHealth = async (): Promise<string> => {
-  try {
-    const response = await api.get('/health');
-    console.log(response.data);
-    return response.data;
-  } catch (error) {
-    console.error('API health check failed:', error);
-    throw error;
+// Add a request interceptor to include the JWT token in the header
+api.interceptors.request.use((config) => {
+  const token = useAuthStore.getState().token;
+  if (token) {
+    config.headers['Authorization'] = `Bearer ${token}`;
   }
+  return config;
+});
+
+// Auth endpoints
+export const auth = {
+  register: (userData: { name: string; email: string; password: string }) =>
+    api.post('/auth/register', userData),
+  login: async (credentials: { email: string; password: string }) => {
+    const response = await api.post('/auth/login', credentials);
+    return response.data; // Assuming the server returns { user, token }
+  },
+  logout: () => api.post('/auth/logout'),
 };
+
+// Tasks endpoints
+export const tasks = {
+  getAll: () => api.get('/tasks'),
+  create: (taskData: { title: string; description: string }) =>
+    api.post('/tasks', taskData),
+  update: (id: number, taskData: { title?: string; description?: string; completed?: boolean }) =>
+    api.put(`/tasks/${id}`, taskData),
+  delete: (id: number) => api.delete(`/tasks/${id}`),
+};
+
+// Health check endpoint
+export const health = {
+  check: () => api.get('/health'),
+};
+
+// Add more endpoint groups as needed
 
 export default api;

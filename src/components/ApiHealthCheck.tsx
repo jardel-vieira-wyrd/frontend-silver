@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { checkApiHealth } from '../api/api';
+import { health } from '../api/api';
 
 const ApiHealthCheck: React.FC = () => {
   const [apiStatus, setApiStatus] = useState<string>('Checking...');
@@ -8,9 +8,9 @@ const ApiHealthCheck: React.FC = () => {
   useEffect(() => {
     const checkHealth = async () => {
       try {
-        const health = await checkApiHealth();
-        setApiStatus(`API status: ${health}`);
-        setIsHealthy(health === 'OK');
+        const response = await health.check();
+        setApiStatus(`API status: ${response.data}`);
+        setIsHealthy(response.data === 'OK');
       } catch (error) {
         setApiStatus('API is unreachable');
         setIsHealthy(false);
