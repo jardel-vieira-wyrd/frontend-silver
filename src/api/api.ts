@@ -38,6 +38,14 @@ export const tasks = {
   update: (id: number, taskData: { title?: string; description?: string; completed?: boolean }) =>
     api.put(`/tasks/${id}`, taskData),
   delete: (id: number) => api.delete(`/tasks/${id}`),
+  getProjects: async () => {
+    try {
+      const response = await api.get('/tasks/projects');
+      return response.data; // Assuming the response contains the projects data
+    } catch (error) {
+      handleApiError(error);
+    }
+  },
 };
 
 // Health check endpoint
@@ -72,4 +80,6 @@ export const createTask = async (taskData: {
 function handleApiError(error: unknown) {
   throw new Error('API Error: ' + error);
 }
+
+export default api;
 
