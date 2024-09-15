@@ -45,6 +45,31 @@ export const health = {
   check: () => api.get('/health'),
 };
 
-// Add more endpoint groups as needed
+// Add task endpoint
+export const createTask = async (taskData: {
+  title: string;
+  project: string;
+  description?: string;
+  status?: 'TO_DO' | 'DOING' | 'DONE' | 'CANCELED';
+  priority?: number;
+  deadline?: string;
+  list?: string;
+}) => {
+  try {
+    const { token } = useAuthStore.getState();
+    const response = await axios.post(`${API_BASE_URL}/tasks`, taskData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
 
-export default api;
+function handleApiError(error: unknown) {
+  throw new Error('API Error: ' + error);
+}
+

@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import Home from './pages/Home';
 import SignUp from './pages/SignUp';
 import SignIn from './pages/SignIn';
-import Dashboard from './pages/Dashboard';
+import Taskboard from './pages/Taskboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useAuthStore } from './stores/authStore';
 
@@ -20,11 +20,12 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Home />} />
-        <Route path="/signup" element={isAuthenticated ? <Navigate to="/dashboard" /> : <SignUp />} />
-        <Route path="/signin" element={isAuthenticated ? <Navigate to="/dashboard" /> : <SignIn />} />
+        <Route path="/" element={isAuthenticated ? <Navigate to="/taskboard" /> : <Home />} />
+        <Route path="/signup" element={isAuthenticated ? <Navigate to="/taskboard" /> : <SignUp />} />
+        <Route path="/signin" element={isAuthenticated ? <Navigate to="/taskboard" /> : <SignIn />} />
         <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/taskboard" element={<Taskboard />} />
+          {/* Add other protected routes here */}
         </Route>
       </Routes>
     </Router>

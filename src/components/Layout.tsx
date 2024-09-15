@@ -12,7 +12,7 @@ function Layout({ children }: LayoutProps) {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="w-full bg-white border-b-2 border-gray-300 p-6 mb-12 shadow-md">
+      <header className="bg-white border-b-2 border-gray-300 p-6 shadow-md">
         <div className="container mx-auto flex justify-between items-center">
           <Link to="/" className="block">
             <h1 className="text-3xl font-bold">Silver Task Manager</h1>
@@ -20,11 +20,13 @@ function Layout({ children }: LayoutProps) {
           {isAuthenticated && <UserHeader />}
         </div>
       </header>
-      <main className="flex-grow flex flex-col items-center p-4">
+      
+      <main className="flex-grow container mx-auto px-4 py-8">
         {children}
       </main>
-      <footer className="w-full bg-gray-100 border-t-2 border-gray-300 p-4 mt-12">
-        <div className="container mx-auto px-4">
+      
+      <footer className="bg-gray-100 border-t-2 border-gray-300 p-4 mt-auto">
+        <div className="container mx-auto">
           <ApiHealthCheck />
         </div>
       </footer>

@@ -24,11 +24,11 @@ function SignIn() {
 
     try {
       const response = await auth.login({ email, password });
-      console.log("Login response:", response); // Add this line to check the API response
+      console.log("Login response:", response);
 
       if (response && response.user && response.token) {
         login(response.user, response.token);
-        navigate("/dashboard");
+        navigate("/taskboard");
       } else {
         setError("Invalid response from server");
       }
