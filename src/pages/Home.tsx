@@ -9,7 +9,6 @@ function Home() {
   return (
     <Layout>
       <div className="flex flex-col items-center">
-        <h1 className="text-3xl font-bold mb-6">Welcome to Silver Task Manager</h1>
         {isAuthenticated ? (
           <div className="text-center">
             <p className="mb-4">Welcome back, {user?.name}!</p>

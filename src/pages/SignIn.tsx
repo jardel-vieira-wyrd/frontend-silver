@@ -24,7 +24,6 @@ function SignIn() {
 
     try {
       const response = await auth.login({ email, password });
-      console.log("Login response:", response);
 
       if (response && response.user && response.token) {
         login(response.user, response.token);
@@ -34,7 +33,7 @@ function SignIn() {
       }
     } catch (err) {
       if (err instanceof Error) {
-        setError(err.message || "Login failed");
+        setError("Invalid email or password!");
       } else {
         setError("An error occurred. Please try again.");
       }

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 interface User {
   name: string;
@@ -22,14 +22,13 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       token: null,
       login: (user, token) => {
-        console.log("Login called with:", { user, token }); // Add this line
         set({ isAuthenticated: true, user, token });
       },
       logout: () => set({ isAuthenticated: false, user: null, token: null }),
     }),
     {
       name: 'auth-storage',
-      getStorage: () => localStorage,
+      storage: createJSONStorage(() => localStorage),
     }
   )
 );

@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { createTask } from "../api/api"; 
 
 interface AddTaskProps {
@@ -15,10 +14,7 @@ function AddTask({ onClose, onAddTask }: AddTaskProps) {
   const [title, setTitle] = useState("");
   const [project, setProject] = useState("");
   const [description, setDescription] = useState("");
-  const [status, setStatus] = useState("TO_DO");
-  const [priority, setPriority] = useState<number | undefined>(undefined);
   const [deadline, setDeadline] = useState("");
-  const [list, setList] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -34,10 +30,8 @@ function AddTask({ onClose, onAddTask }: AddTaskProps) {
         title,
         project,
         description,
-        status: status as 'TO_DO' | 'DOING' | 'DONE' | 'CANCELED',
-        priority,
+        status: 'TO_DO' as const,
         deadline: deadline ? new Date(deadline).toISOString() : undefined,
-        list,
       };
 
       const createdTask = await createTask(newTask);
@@ -66,7 +60,7 @@ function AddTask({ onClose, onAddTask }: AddTaskProps) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white p-6 rounded-lg w-full max-w-md">
+      <div className="bg-white p-6 rounded-lg w-full max-w-md mx-4">
         <h2 className="text-2xl font-bold mb-4">Add New Task</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -98,43 +92,12 @@ function AddTask({ onClose, onAddTask }: AddTaskProps) {
             />
           </div>
           <div>
-            <Label htmlFor="status">Status</Label>
-            <Select value={status} onValueChange={setStatus}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="TO_DO">To Do</SelectItem>
-                <SelectItem value="DOING">Doing</SelectItem>
-                <SelectItem value="DONE">Done</SelectItem>
-                <SelectItem value="CANCELED">Canceled</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label htmlFor="priority">Priority</Label>
-            <Input
-              id="priority"
-              type="number"
-              value={priority?.toString() || ""}
-              onChange={(e) => setPriority(parseInt(e.target.value) || undefined)}
-            />
-          </div>
-          <div>
             <Label htmlFor="deadline">Deadline</Label>
             <Input
               id="deadline"
               type="datetime-local"
               value={deadline}
               onChange={(e) => setDeadline(e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="list">List</Label>
-            <Input
-              id="list"
-              value={list}
-              onChange={(e) => setList(e.target.value)}
             />
           </div>
           {error && <p className="text-red-500">{error}</p>}

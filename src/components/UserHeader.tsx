@@ -1,18 +1,12 @@
 import { useAuthStore } from "../stores/authStore";
 import { Button } from "@/components/ui/button";
-import { useEffect } from "react";
 
 const UserHeader = () => {
-  const { user, logout, isAuthenticated, token } = useAuthStore();
-
-  useEffect(() => {
-    console.log("Auth state:", { isAuthenticated, user, token });
-    console.log("localStorage:", JSON.parse(localStorage.getItem('auth-storage') || '{}'));
-  }, [isAuthenticated, user, token]);
+  const { user, logout } = useAuthStore();
 
   const handleLogout = () => {
     logout();
-    window.location.href = '/';
+    // window.location.href = '/';
   };
 
   return (
