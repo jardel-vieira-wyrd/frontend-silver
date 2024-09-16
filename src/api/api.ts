@@ -1,7 +1,8 @@
-import axios from 'axios';
+import axios, { InternalAxiosRequestConfig } from 'axios';
 import { useAuthStore } from '../stores/authStore';
 import { User } from '../stores/authStore';  // Import the User interface
 import { useTaskStore } from '../stores/taskStore';
+
 
 const API_BASE_URL = 'http://localhost:3000';
 
@@ -13,9 +14,10 @@ const api = axios.create({
 });
 
 // Add a request interceptor to include the JWT token in the header
-api.interceptors.request.use((config) => {
+api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const token = useAuthStore.getState().token;
   if (token) {
+    config.headers = config.headers || {};
     config.headers['Authorization'] = `Bearer ${token}`;
   }
   return config;

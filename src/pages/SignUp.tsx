@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { auth } from "../api/api";
-import axios from "axios"; // Import axios to check for AxiosError
+import axios, { AxiosError } from "axios";
 
 function SignUp() {
   const [name, setName] = useState("");
@@ -25,12 +25,13 @@ function SignUp() {
     try {
       await auth.register({ name, email, password });
       navigate("/signin");
-    } catch (err) {
+    } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
-        if (err.response?.status === 409) {
+        const axiosError = err as AxiosError<{ message?: string }>;
+        if (axiosError.response?.status === 409) {
           setError("This email is already registered. Please use a different email or try logging in.");
         } else {
-          setError(err.response?.data?.message || "Registration failed. Please try again.");
+          setError(axiosError.response?.data?.message || "Registration failed. Please try again.");
         }
       } else if (err instanceof Error) {
         setError(err.message || "Registration failed");
