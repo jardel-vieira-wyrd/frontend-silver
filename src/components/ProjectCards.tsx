@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 function ProjectCards() {
   const { projects, fetchProjects } = useTaskStore();
   const [expandedProjects, setExpandedProjects] = useState<{ [key: string]: boolean }>({});
-  const [selectedTask, setSelectedTask] = useState(null);
+  const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const [showAddTask, setShowAddTask] = useState(false);
   const [selectedProject, setSelectedProject] = useState('');
 
@@ -25,8 +25,8 @@ function ProjectCards() {
     }));
   };
 
-  const openTaskDetails = (task: any) => {
-    setSelectedTask(task);
+  const openTaskDetails = (taskId: number) => {
+    setSelectedTaskId(taskId);
   };
 
   const handleAddTask = (projectName: string) => {
@@ -63,12 +63,12 @@ function ProjectCards() {
               {expandedProjects[projectName] ? <ChevronUp className="ml-1 h-4 w-4" /> : <ChevronDown className="ml-1 h-4 w-4" />}
             </div>
             {expandedProjects[projectName] && (
-              <ul className="mt-2 space-y-1">
+              <ul className="mt-2 space-y-2">
                 {projects[projectName].map((task) => (
                   <li 
                     key={task.id} 
-                    className="text-sm cursor-pointer hover:bg-gray-100 p-1 rounded flex justify-between items-center"
-                    onClick={() => openTaskDetails(task)}
+                    className="text-sm cursor-pointer hover:bg-gray-100 p-2 rounded flex justify-between items-center border border-gray-200 shadow-sm"
+                    onClick={() => openTaskDetails(task.id)}
                   >
                     <span className="font-medium truncate mr-2">{task.title}</span>
                     <span className={`text-xs px-2 py-1 rounded-full w-24 text-center ${getStatusColor(task.status)}`}>
@@ -81,10 +81,10 @@ function ProjectCards() {
           </div>
         ))}
       </div>
-      {selectedTask && (
+      {selectedTaskId && (
         <TaskDetailsModal
-          task={selectedTask}
-          onClose={() => setSelectedTask(null)}
+          taskId={selectedTaskId}
+          onClose={() => setSelectedTaskId(null)}
         />
       )}
       {showAddTask && (

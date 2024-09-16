@@ -6,7 +6,7 @@ import { Menu, X } from 'lucide-react';
 
 const navigation = [
   { name: 'Projects', href: '/' },
-  { name: 'Tasks', href: '/' }
+  { name: 'Teams', href: '/' }
 ];
 
 function Navbar() {

@@ -31,6 +31,7 @@ interface TaskState {
   fetchProjects: () => Promise<void>;
   addTask: (task: Task) => void;
   updateStore: () => Promise<void>;
+  updateTaskPermission: (taskId: number, userId: number, role: string) => void;
 }
 
 export const useTaskStore = create<TaskState>((set, get) => ({
@@ -55,5 +56,26 @@ export const useTaskStore = create<TaskState>((set, get) => ({
   },
   updateStore: async () => {
     await get().fetchProjects();
+  },
+  updateTaskPermission: (taskId: number, userId: number, role: string) => {
+    set((state) => {
+      const updatedProjects = { ...state.projects };
+      for (const projectName in updatedProjects) {
+        updatedProjects[projectName] = updatedProjects[projectName].map(task => {
+          if (task.id === taskId) {
+            const updatedPermissions = task.userPermissions.map(perm => 
+              perm.userId === userId ? { ...perm, role } : perm
+            );
+            if (!updatedPermissions.some(perm => perm.userId === userId)) {
+              // If the user doesn't exist in the permissions, add them
+              updatedPermissions.push({ userId, role, name: '', email: '' });
+            }
+            return { ...task, userPermissions: updatedPermissions };
+          }
+          return task;
+        });
+      }
+      return { projects: updatedProjects };
+    });
   },
 }));

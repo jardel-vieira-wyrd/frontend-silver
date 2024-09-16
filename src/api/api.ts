@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useAuthStore } from '../stores/authStore';
 import { User } from '../stores/authStore';  // Import the User interface
+import { useTaskStore } from '../stores/taskStore';
 
 const API_BASE_URL = 'http://localhost:3000';
 
@@ -49,7 +50,13 @@ export const tasks = {
   },
   updatePermission: async (taskId: number, userId: number, role: string) => {
     try {
-      const response = await api.post(`/tasks/${taskId}/permissions`, { userId, role });
+      console.log('Updating permission for task:', taskId, 'user:', userId, 'role:', role);
+      const response = await api.post(`/tasks/permissions`, { taskId, userId, role });
+      
+      // Fetch updated projects after successful permission update
+      const fetchProjects = useTaskStore.getState().fetchProjects;
+      await fetchProjects();
+
       return response.data;
     } catch (error) {
       handleApiError(error);

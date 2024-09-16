@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { X, Calendar, Clock, List, AlertCircle, User, Edit } from 'lucide-react';
 import { StatusText, getStatusColor } from '../utils/taskUtils';
 import { useAuthStore } from '../stores/authStore';
+import { useTaskStore } from '../stores/taskStore';
 import UserPermissionsModal from './UserPermissionsModal';
 
 // Update the Task interface to include userPermissions
@@ -25,18 +26,41 @@ interface Task {
 }
 
 interface TaskDetailsModalProps {
-  task: Task | null;
+  taskId: number;  // Change this from task to taskId
   onClose: () => void;
 }
 
-const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ task, onClose }) => {
+const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ taskId, onClose }) => {
   const [showPermissionsModal, setShowPermissionsModal] = useState(false);
   const [editMode, setEditMode] = useState<'EXECUTOR' | 'STAKEHOLDER' | null>(null);
+  const { user: loggedInUser } = useAuthStore();
+  const { projects } = useTaskStore();
+  const [task, setTask] = useState<Task | null>(null);
+
+  useEffect(() => {
+    // Find the task in the projects
+    for (const projectTasks of Object.values(projects)) {
+      const foundTask = projectTasks.find(t => t.id === taskId);
+      if (foundTask) {
+        setTask(foundTask);
+        break;
+      }
+    }
+  }, [taskId, projects]);
+
+  const distinctUsersCount = useMemo(() => {
+    if (!task) return 0;
+    const userSet = new Set(
+      task.userPermissions.map(perm => perm.userId)
+    );
+    return userSet.size;
+  }, [task]);
+
+  const isOwner = useMemo(() => {
+    return task?.userPermissions.some(perm => perm.role === 'OWNER' && perm.userId === loggedInUser?.id) || false;
+  }, [task, loggedInUser]);
 
   if (!task) return null;
-
-  const { user: loggedInUser } = useAuthStore();
-  const isOwner = task.userPermissions.some(perm => perm.role === 'OWNER' && perm.userId === loggedInUser?.id);
 
   const getPriorityColor = (priority: number | null) => {
     if (priority === null) return 'bg-gray-200 text-gray-800';
@@ -51,9 +75,8 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ task, onClose }) =>
   };
 
   const handlePermissionsUpdate = () => {
-    // Refetch task details or update local state
-    console.log('Permissions updated');
-    // You might want to trigger a re-fetch of the task data here
+    // setShowPermissionsModal(false);
+    setEditMode(null);
   };
 
   const openPermissionsModal = (mode: 'EXECUTOR' | 'STAKEHOLDER') => {
@@ -91,9 +114,21 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ task, onClose }) =>
           </div>
           <div className="flex items-center">
             <List className="mr-2 h-5 w-5 text-gray-500" />
-            <span className="text-sm text-gray-700">
-              List: {task.list || '-'}
-            </span>
+
+            <div className="flex w-full justify-between items-center">
+                <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-1.5 rounded">
+                {distinctUsersCount} person{distinctUsersCount !== 1 ? 's' : ''}
+                </span>
+                {isOwner && (
+                <button 
+                    className="text-gray-500 hover:text-gray-700"
+                    onClick={() => openPermissionsModal('STAKEHOLDER')}
+                >
+                    <Edit size={16} />
+                </button>
+                )}
+            </div>
+            
           </div>
           <div className="flex items-center">
             <Clock className="mr-2 h-5 w-5 text-gray-500" />
@@ -141,19 +176,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ task, onClose }) =>
               <p className="text-xs text-gray-500">Assigned</p>
             </div>
           </div>
-          <div className="mt-4 flex items-center justify-between">
-            <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">
-              {task.userPermissions.length} stakeholder{task.userPermissions.length !== 1 ? 's' : ''}
-            </span>
-            {isOwner && (
-              <button 
-                className="text-gray-500 hover:text-gray-700 ml-2"
-                onClick={() => openPermissionsModal('STAKEHOLDER')}
-              >
-                <Edit size={16} />
-              </button>
-            )}
-          </div>
+
         </div>
       </div>
       {showPermissionsModal && editMode && (
@@ -161,7 +184,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ task, onClose }) =>
           taskId={task.id}
           role={editMode}
           onClose={() => {
-            setShowPermissionsModal(false);
+            // setShowPermissionsModal(false);
             setEditMode(null);
           }}
           onUpdate={handlePermissionsUpdate}
