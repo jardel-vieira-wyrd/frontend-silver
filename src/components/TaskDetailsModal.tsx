@@ -1,7 +1,10 @@
-import React from 'react';
-import { X, Calendar, Clock, List, AlertCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, Calendar, Clock, List, AlertCircle, User, Edit } from 'lucide-react';
 import { StatusText, getStatusColor } from '../utils/taskUtils';
+import { useAuthStore } from '../stores/authStore';
+import UserPermissionsModal from './UserPermissionsModal';
 
+// Update the Task interface to include userPermissions
 interface Task {
   id: number;
   title: string;
@@ -13,6 +16,12 @@ interface Task {
   list: string | null;
   createdAt: string;
   updatedAt: string;
+  userPermissions: {
+    userId: number;
+    email: string;
+    name: string;
+    role: string;
+  }[];
 }
 
 interface TaskDetailsModalProps {
@@ -21,7 +30,13 @@ interface TaskDetailsModalProps {
 }
 
 const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ task, onClose }) => {
+  const [showPermissionsModal, setShowPermissionsModal] = useState(false);
+  const [editMode, setEditMode] = useState<'EXECUTOR' | 'STAKEHOLDER' | null>(null);
+
   if (!task) return null;
+
+  const { user: loggedInUser } = useAuthStore();
+  const isOwner = task.userPermissions.some(perm => perm.role === 'OWNER' && perm.userId === loggedInUser?.id);
 
   const getPriorityColor = (priority: number | null) => {
     if (priority === null) return 'bg-gray-200 text-gray-800';
@@ -33,6 +48,17 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ task, onClose }) =>
   const formatDate = (dateString: string | null) => {
     if (!dateString) return '-';
     return new Date(dateString).toLocaleDateString();
+  };
+
+  const handlePermissionsUpdate = () => {
+    // Refetch task details or update local state
+    console.log('Permissions updated');
+    // You might want to trigger a re-fetch of the task data here
+  };
+
+  const openPermissionsModal = (mode: 'EXECUTOR' | 'STAKEHOLDER') => {
+    setEditMode(mode);
+    setShowPermissionsModal(true);
   };
 
   return (
@@ -82,7 +108,65 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ task, onClose }) =>
             </span>
           </div>
         </div>
+
+        <div className="mt-6 border-t pt-4">
+          <h4 className="text-lg font-semibold mb-2">Task Permissions</h4>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <div className="flex items-center mb-1">
+                <User className="mr-2 h-5 w-5 text-gray-500" />
+                <span className="text-sm font-bold text-gray-700">
+                  {task.userPermissions.find(user => user.role === 'OWNER')?.name || 'Not assigned'}
+                </span>
+              </div>
+              <p className="text-xs text-gray-500">Owner</p>
+            </div>
+            <div>
+              <div className="flex items-center mb-1 justify-between">
+                <div className="flex items-center">
+                  <User className="mr-2 h-5 w-5 text-gray-500" />
+                  <span className="text-sm font-bold text-gray-700">
+                    {task.userPermissions.find(user => user.role === 'EXECUTOR')?.name || 'Not assigned'}
+                  </span>
+                </div>
+                {isOwner && (
+                  <button 
+                    className="text-gray-500 hover:text-gray-700"
+                    onClick={() => openPermissionsModal('EXECUTOR')}
+                  >
+                    <Edit size={16} />
+                  </button>
+                )}
+              </div>
+              <p className="text-xs text-gray-500">Assigned</p>
+            </div>
+          </div>
+          <div className="mt-4 flex items-center justify-between">
+            <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">
+              {task.userPermissions.length} stakeholder{task.userPermissions.length !== 1 ? 's' : ''}
+            </span>
+            {isOwner && (
+              <button 
+                className="text-gray-500 hover:text-gray-700 ml-2"
+                onClick={() => openPermissionsModal('STAKEHOLDER')}
+              >
+                <Edit size={16} />
+              </button>
+            )}
+          </div>
+        </div>
       </div>
+      {showPermissionsModal && editMode && (
+        <UserPermissionsModal
+          taskId={task.id}
+          role={editMode}
+          onClose={() => {
+            setShowPermissionsModal(false);
+            setEditMode(null);
+          }}
+          onUpdate={handlePermissionsUpdate}
+        />
+      )}
     </div>
   );
 };

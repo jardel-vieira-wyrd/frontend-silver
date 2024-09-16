@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useAuthStore } from '../stores/authStore';
+import { User } from '../stores/authStore';  // Import the User interface
 
 const API_BASE_URL = 'http://localhost:3000';
 
@@ -41,9 +42,18 @@ export const tasks = {
   getProjects: async () => {
     try {
       const response = await api.get('/tasks/projects');
-      return response.data; // Assuming the response contains the projects data
+      return response.data; 
     } catch (error) {
       handleApiError(error);
+    }
+  },
+  updatePermission: async (taskId: number, userId: number, role: string) => {
+    try {
+      const response = await api.post(`/tasks/${taskId}/permissions`, { userId, role });
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+      throw error;
     }
   },
 };
@@ -75,6 +85,19 @@ export const createTask = async (taskData: {
   } catch (error) {
     handleApiError(error);
   }
+};
+
+// Users endpoint
+export const users = {
+  getAll: async (): Promise<User[]> => {
+    try {
+      const response = await api.get<User[]>('/users');
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+      return [];
+    }
+  },
 };
 
 function handleApiError(error: unknown) {

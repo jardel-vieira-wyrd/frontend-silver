@@ -55,8 +55,8 @@ function AddTask({ onClose, project }: AddTaskProps) {
         deadline: deadline ? new Date(deadline).toISOString() : undefined,
       };
 
-      const createdTask = await createTask(newTask);
-      await updateStore(); // Update the store after creating the task
+      await createTask(newTask);
+      await updateStore(); 
       onClose();
     } catch (err) {
       if (err instanceof Error) {

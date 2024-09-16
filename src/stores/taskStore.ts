@@ -1,6 +1,13 @@
 import { create } from 'zustand';
 import { tasks } from '../api/api';
 
+interface UserPermission {
+  userId: number;
+  email: string;
+  name: string;
+  role: string;
+}
+
 interface Task {
   id: number;
   title: string;
@@ -12,6 +19,7 @@ interface Task {
   list: string | null;
   createdAt: string;
   updatedAt: string;
+  userPermissions: UserPermission[];
 }
 
 interface ProjectTasks {

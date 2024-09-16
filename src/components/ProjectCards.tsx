@@ -15,6 +15,7 @@ function ProjectCards() {
 
   useEffect(() => {
     fetchProjects();
+    console.log(projects);
   }, [fetchProjects]);
 
   const toggleProjectExpansion = (projectName: string) => {
