@@ -14,3 +14,20 @@ export const getStatusColor = (status: string) => {
     default: return 'bg-gray-100 text-gray-800';
   }
 };
+
+export function getPriorityColor(priority: number | null): string {
+  const colors = [
+    'bg-white text-gray-800',
+    'bg-red-50 text-red-800',
+    'bg-red-100 text-red-800',
+    'bg-red-200 text-red-800',
+    'bg-red-300 text-red-800',
+    'bg-red-400 text-red-800'
+  ];
+  
+  if (priority === null) {
+    return colors[0];
+  }
+  
+  return colors[priority] || colors[0];
+}

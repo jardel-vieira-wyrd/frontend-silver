@@ -3,7 +3,7 @@ import { useTaskStore } from '../stores/taskStore';
 import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
 import TaskDetailsModal from './TaskDetailsModal';
 import AddTask from './AddTask';
-import { StatusText, getStatusColor } from '../utils/taskUtils';
+import { StatusText, getStatusColor, getPriorityColor } from '../utils/taskUtils';
 import { Button } from "@/components/ui/button";
 
 function ProjectCards() {
@@ -48,7 +48,7 @@ function ProjectCards() {
       <h2 className="text-2xl font-bold mb-4">{title}</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {Object.keys(projects).map((projectName) => (
-          <div key={projectName} className="bg-white border-2 border-gray-300 rounded-lg p-6 relative min-h-[140px] pb-16 flex flex-col">
+          <div key={projectName} className="bg-white border-2 border-gray-300 rounded-lg p-6 relative min-h-[130px] flex flex-col">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-semibold">{projectName}</h3>
               <div 
@@ -59,6 +59,20 @@ function ProjectCards() {
                 {expandedProjects[projectName] ? <ChevronUp className="ml-1 h-4 w-4" /> : <ChevronDown className="ml-1 h-4 w-4" />}
               </div>
             </div>
+            
+            {/* High Priority Task Box */}
+            {projects[projectName].length > 0 && (
+              <div className="w-[50%] p-3 bg-gray-100 rounded-md flex flex-col">
+                <p className="text-xs font-semibold text-gray-500 mb-1">High Priority Task</p>
+                <div 
+                  className="text-sm cursor-pointer hover:bg-gray-200 p-2 rounded flex justify-between items-center"
+                  onClick={() => openTaskDetails(projects[projectName][0].id)}
+                >
+                  <span className="font-medium truncate mr-2">{projects[projectName][0].title}</span>               
+                </div>
+              </div>
+            )}
+
             {expandedProjects[projectName] && (
               <ul className="mt-2 space-y-2 flex-grow">
                 {projects[projectName].map((task) => (
@@ -68,16 +82,21 @@ function ProjectCards() {
                     onClick={() => openTaskDetails(task.id)}
                   >
                     <span className="font-medium truncate mr-2">{task.title}</span>
-                    <span className={`text-xs px-2 py-1 rounded-full w-24 text-center ${getStatusColor(task.status)}`}>
-                      {StatusText[task.status as keyof typeof StatusText] || task.status}
-                    </span>
+                    <div className="flex items-center space-x-2">
+                      <span className={`text-xs px-2 py-1 rounded-full w-24 text-center ${getStatusColor(task.status)}`}>
+                        {StatusText[task.status as keyof typeof StatusText] || task.status}
+                      </span>
+                      <span className={`text-xs px-2 py-1 rounded-full w-16 text-center ${getPriorityColor(task.priority)}`}>
+                        {task.priority === null ? 'P0' : `P${task.priority}`}
+                      </span>
+                    </div>
                   </li>
                 ))}
               </ul>
             )}
             {groupBy === 'project' && (
               <Button
-                className="absolute bottom-4 right-6 bg-black text-white rounded-full w-28 h-10 text-xs hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center"
+                className="absolute bottom-6 right-6 bg-black text-white rounded-full w-28 h-10 text-xs hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center"
                 onClick={() => handleAddTask(projectName)}
               >
                 <Plus className="h-6 w-6 mr-2" /> Add Task

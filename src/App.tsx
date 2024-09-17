@@ -8,14 +8,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { useAuthStore } from './stores/authStore';
 
 function App() {
-  const { isAuthenticated, token } = useAuthStore();
-
-  useEffect(() => {
-    // You might want to verify the token with your backend here
-    if (token) {
-      // Optionally refresh the token or fetch user data
-    }
-  }, [token]);
+  const { isAuthenticated } = useAuthStore();
 
   return (
     <Router>
@@ -25,8 +18,9 @@ function App() {
         <Route path="/signin" element={isAuthenticated ? <Navigate to="/taskboard" /> : <SignIn />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/taskboard" element={<Taskboard />} />
-          {/* Add other protected routes here */}
         </Route>
+        {/* Catch-all route for undefined paths */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );
