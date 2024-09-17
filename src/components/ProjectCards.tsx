@@ -48,7 +48,7 @@ function ProjectCards() {
       <h2 className="text-2xl font-bold mb-4">{title}</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {Object.keys(projects).map((projectName) => (
-          <div key={projectName} className="bg-white border-2 border-gray-300 rounded-lg p-6 relative min-h-[130px] flex flex-col">
+          <div key={projectName} className="bg-white border-2 border-gray-300 rounded-lg p-6 relative min-h-[140px] pb-16 flex flex-col">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-semibold">{projectName}</h3>
               <div 
@@ -77,7 +77,7 @@ function ProjectCards() {
             )}
             {groupBy === 'project' && (
               <Button
-                className="absolute bottom-4 right-4 bg-black text-white rounded-full w-28 h-10 text-xs hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center"
+                className="absolute bottom-4 right-6 bg-black text-white rounded-full w-28 h-10 text-xs hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center"
                 onClick={() => handleAddTask(projectName)}
               >
                 <Plus className="h-6 w-6 mr-2" /> Add Task
