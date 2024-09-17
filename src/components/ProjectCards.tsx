@@ -45,7 +45,7 @@ function ProjectCards() {
 
   return (
     <>
-      <h2 className="text-2xl font-bold mb-4">{title}</h2>
+      {groupBy === 'project' && <h2 className="text-2xl font-bold mb-4">{title}</h2>}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {Object.keys(projects).map((projectName) => (
           <div key={projectName} className="bg-white border-2 border-gray-300 rounded-lg p-6 relative min-h-[130px] flex flex-col">

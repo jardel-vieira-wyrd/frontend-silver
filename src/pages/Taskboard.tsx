@@ -16,7 +16,7 @@ function Taskboard() {
 
   return (
     <Layout>
-      <div className="h-[calc(100vh-16rem)] flex flex-col">
+      <div className="max-h-[calc(100vh-185px)] flex flex-col">
         <div className="flex-grow overflow-auto">
           <ProjectCards />
         </div>
