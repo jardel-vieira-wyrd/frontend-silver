@@ -5,6 +5,9 @@ This repository contains the frontend code for the Silver project. It's built us
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development purposes.
+Please, before running the project, run the backend project in the following repository:
+
+[Backend Silver](https://github.com/jardel-vieira-wyrd/backend-silver)
 
 ### Prerequisites
 
