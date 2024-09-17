@@ -39,12 +39,18 @@ export const tasks = {
   getAll: () => api.get('/tasks'),
   create: (taskData: { title: string; description: string }) =>
     api.post('/tasks', taskData),
-  update: (id: number, taskData: { title?: string; description?: string; completed?: boolean }) =>
+  update: (id: number, taskData: { 
+    title?: string; 
+    description?: string; 
+    completed?: boolean;
+    status?: TaskStatus;
+    priority?: number;
+  }) =>
     api.put(`/tasks/${id}`, taskData),
   delete: (id: number) => api.delete(`/tasks/${id}`),
-  getProjects: async () => {
+  getProjects: async (groupBy: 'user' | 'project' | undefined) => {
     try {
-      const response = await api.get('/tasks/projects');
+      const response = await api.get('/tasks/projects', { params: { groupBy } });
       return response.data; 
     } catch (error) {
       handleApiError(error);
@@ -108,6 +114,8 @@ export const users = {
     }
   },
 };
+
+export type TaskStatus = 'TO_DO' | 'DOING' | 'DONE' | 'CANCELED';
 
 function handleApiError(error: unknown) {
   throw new Error('API Error: ' + error);

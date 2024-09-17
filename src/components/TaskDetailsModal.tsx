@@ -4,6 +4,9 @@ import { StatusText, getStatusColor } from '../utils/taskUtils';
 import { useAuthStore } from '../stores/authStore';
 import { useTaskStore } from '../stores/taskStore';
 import UserPermissionsModal from './UserPermissionsModal';
+import StatusSelectionModal from './StatusSelectionModal';
+import PrioritySelectionModal from './PrioritySelectionModal';
+import { TaskStatus } from '../api/api';
 
 // Update the Task interface to include userPermissions
 interface Task {
@@ -11,7 +14,7 @@ interface Task {
   title: string;
   project: string;
   description: string;
-  status: string;
+  status: TaskStatus;  // Use TaskStatus type here
   priority: number | null;
   deadline: string | null;
   list: string | null;
@@ -26,12 +29,14 @@ interface Task {
 }
 
 interface TaskDetailsModalProps {
-  taskId: number;  // Change this from task to taskId
+  taskId: number;
   onClose: () => void;
 }
 
 const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ taskId, onClose }) => {
   const [showPermissionsModal, setShowPermissionsModal] = useState(false);
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [showPriorityModal, setShowPriorityModal] = useState(false);
   const [editMode, setEditMode] = useState<'EXECUTOR' | 'STAKEHOLDER' | null>(null);
   const { user: loggedInUser } = useAuthStore();
   const { projects } = useTaskStore();
@@ -60,13 +65,24 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ taskId, onClose }) 
     return task?.userPermissions.some(perm => perm.role === 'OWNER' && perm.userId === loggedInUser?.id) || false;
   }, [task, loggedInUser]);
 
+  const isOwnerOrExecutor = useMemo(() => {
+    return task?.userPermissions.some(perm => 
+      (perm.role === 'OWNER' || perm.role === 'EXECUTOR') && perm.userId === loggedInUser?.id
+    ) || false;
+  }, [task, loggedInUser]);
+
   if (!task) return null;
 
   const getPriorityColor = (priority: number | null) => {
-    if (priority === null) return 'bg-gray-200 text-gray-800';
-    if (priority <= 1) return 'bg-red-100 text-red-800';
-    if (priority <= 3) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-green-100 text-green-800';
+    const effectivePriority = priority === null ? 0 : priority;
+    if (effectivePriority === 0) return 'bg-white text-gray-800';
+    if (effectivePriority <= 1) return 'bg-red-100 text-red-800';
+    if (effectivePriority <= 3) return 'bg-red-300 text-red-800';
+    return 'bg-red-500 text-white';
+  };
+
+  const getPriorityText = (priority: number | null) => {
+    return priority === null ? '0' : priority.toString();
   };
 
   const formatDate = (dateString: string | null) => {
@@ -75,7 +91,6 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ taskId, onClose }) 
   };
 
   const handlePermissionsUpdate = () => {
-    // setShowPermissionsModal(false);
     setEditMode(null);
   };
 
@@ -94,13 +109,33 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ taskId, onClose }) 
           </button>
         </div>
         <h3 className="text-xl font-semibold mb-2">{task.title}</h3>
-        <div className="flex flex-wrap gap-2 mb-4">
-          <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(task.status)}`}>
-            {StatusText[task.status as keyof typeof StatusText] || task.status}
-          </span>
-          <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getPriorityColor(task.priority)}`}>
-            Priority: {task.priority ?? '-'}
-          </span>
+        <div className="flex flex-wrap gap-4 mb-4 items-center">
+          <div className="flex items-center">
+            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(task.status)} w-24 text-center`}>
+              {StatusText[task.status] || task.status}
+            </span>
+            {isOwnerOrExecutor && (
+              <button 
+                className="ml-2 text-gray-500 hover:text-gray-700"
+                onClick={() => setShowStatusModal(true)}
+              >
+                <Edit size={16} />
+              </button>
+            )}
+          </div>
+          <div className="flex items-center">
+            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getPriorityColor(task.priority)} w-24 text-center font-bold`}>
+              Priority: {getPriorityText(task.priority)}
+            </span>
+            {isOwnerOrExecutor && (
+              <button 
+                className="ml-2 text-gray-500 hover:text-gray-700"
+                onClick={() => setShowPriorityModal(true)}
+              >
+                <Edit size={16} />
+              </button>
+            )}
+          </div>
         </div>
         <div className="bg-gray-50 rounded-lg p-4 mb-4">
           <p className="text-gray-700">{task.description || '-'}</p>
@@ -184,10 +219,23 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ taskId, onClose }) 
           taskId={task.id}
           role={editMode}
           onClose={() => {
-            // setShowPermissionsModal(false);
             setEditMode(null);
           }}
           onUpdate={handlePermissionsUpdate}
+        />
+      )}
+      {showStatusModal && task && (
+        <StatusSelectionModal
+          taskId={task.id}
+          currentStatus={task.status}
+          onClose={() => setShowStatusModal(false)}
+        />
+      )}
+      {showPriorityModal && task && (
+        <PrioritySelectionModal
+          taskId={task.id}
+          currentPriority={task.priority}
+          onClose={() => setShowPriorityModal(false)}
         />
       )}
     </div>

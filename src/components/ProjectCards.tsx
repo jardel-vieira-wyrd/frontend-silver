@@ -7,13 +7,14 @@ import { StatusText, getStatusColor } from '../utils/taskUtils';
 import { Button } from "@/components/ui/button";
 
 function ProjectCards() {
-  const { projects, fetchProjects } = useTaskStore();
+  const { projects, fetchProjects, groupBy } = useTaskStore();
   const [expandedProjects, setExpandedProjects] = useState<{ [key: string]: boolean }>({});
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const [showAddTask, setShowAddTask] = useState(false);
   const [selectedProject, setSelectedProject] = useState('');
 
   useEffect(() => {
+
     fetchProjects();
     console.log(projects);
   }, [fetchProjects]);
@@ -40,30 +41,26 @@ function ProjectCards() {
     fetchProjects(); // Refresh the projects list
   };
 
+  const title = groupBy === 'user' ? 'Team' : 'Projects';
+
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <h2 className="text-2xl font-bold mb-4">{title}</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {Object.keys(projects).map((projectName) => (
-          <div key={projectName} className="bg-white border-2 border-gray-300 rounded-lg p-4">
-            <div className="flex justify-between items-center mb-2">
-              <h3 className="text-lg font-semibold">{projectName}</h3>
-              <Button
-                className="bg-black text-white rounded-full w-18 h-6 text-xs hover:bg-gray-800 transition-colors duration-200"
-                onClick={() => handleAddTask(projectName)}
+          <div key={projectName} className="bg-white border-2 border-gray-300 rounded-lg p-6 relative min-h-[130px] flex flex-col">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-semibold">{projectName}</h3>
+              <div 
+                className="text-sm text-gray-600 cursor-pointer flex items-center"
+                onClick={() => toggleProjectExpansion(projectName)}
               >
-                <Plus className="h-4 w-4 mr-1 inline" />
-                task
-              </Button>
-            </div>
-            <div 
-              className="text-sm text-gray-600 cursor-pointer flex items-center"
-              onClick={() => toggleProjectExpansion(projectName)}
-            >
-              <span>{projects[projectName].length} task{projects[projectName].length !== 1 ? 's' : ''}</span>
-              {expandedProjects[projectName] ? <ChevronUp className="ml-1 h-4 w-4" /> : <ChevronDown className="ml-1 h-4 w-4" />}
+                <span>{projects[projectName].length} task{projects[projectName].length !== 1 ? 's' : ''}</span>
+                {expandedProjects[projectName] ? <ChevronUp className="ml-1 h-4 w-4" /> : <ChevronDown className="ml-1 h-4 w-4" />}
+              </div>
             </div>
             {expandedProjects[projectName] && (
-              <ul className="mt-2 space-y-2">
+              <ul className="mt-2 space-y-2 flex-grow">
                 {projects[projectName].map((task) => (
                   <li 
                     key={task.id} 
@@ -77,6 +74,14 @@ function ProjectCards() {
                   </li>
                 ))}
               </ul>
+            )}
+            {groupBy === 'project' && (
+              <Button
+                className="absolute bottom-4 right-4 bg-black text-white rounded-full w-28 h-10 text-xs hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center"
+                onClick={() => handleAddTask(projectName)}
+              >
+                <Plus className="h-6 w-6 mr-2" /> Add Task
+              </Button>
             )}
           </div>
         ))}

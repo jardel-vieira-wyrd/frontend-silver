@@ -28,6 +28,8 @@ interface ProjectTasks {
 
 interface TaskState {
   projects: ProjectTasks;
+  groupBy?: 'user' | 'project' | undefined;
+  setGroupBy: (groupBy: 'user' | 'project' | undefined) => void;
   fetchProjects: () => Promise<void>;
   addTask: (task: Task) => void;
   updateStore: () => Promise<void>;
@@ -36,9 +38,13 @@ interface TaskState {
 
 export const useTaskStore = create<TaskState>((set, get) => ({
   projects: {},
+  groupBy: undefined,
+  setGroupBy: (groupBy: 'user' | 'project' | undefined) => {
+    set({ groupBy });
+  },
   fetchProjects: async () => {
     try {
-      const projects = await tasks.getProjects();
+      const projects = await tasks.getProjects(get().groupBy);
       set({ projects });
     } catch (error) {
       console.error('Error fetching projects:', error);

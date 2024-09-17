@@ -1,17 +1,27 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../stores/authStore";
+import { useTaskStore } from "../stores/taskStore";
 import UserHeader from "./UserHeader";
 import { Menu, X } from 'lucide-react';
 
 const navigation = [
-  { name: 'Projects', href: '/' },
-  { name: 'Teams', href: '/' }
+  { name: 'Projects', href: '/', groupBy: 'project' },
+  { name: 'Teams', href: '/', groupBy: 'user' }
 ];
 
 function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const { setGroupBy, fetchProjects } = useTaskStore();
+  const navigate = useNavigate();
+
+  const handleNavigation = (href: string, groupBy: 'project' | 'user') => {
+    setGroupBy(groupBy);
+    fetchProjects();
+    navigate(href);
+    setIsMenuOpen(false);
+  };
 
   return (
     <nav className="bg-black">
@@ -42,13 +52,13 @@ function Navbar() {
               <div className="hidden sm:ml-6 sm:block">
                 <div className="flex space-x-4">
                   {navigation.map((item) => (
-                    <Link
+                    <button
                       key={item.name}
-                      to={item.href}
+                      onClick={() => handleNavigation(item.href, item.groupBy as 'project' | 'user')}
                       className="max-w-xs text-white hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium"
                     >
                       {item.name}
-                    </Link>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -73,14 +83,13 @@ function Navbar() {
         <div className="sm:hidden border-t border-gray-700 max-w-xs">
           <div className="space-y-1 px-2 pb-3 pt-2 max-w-xs">
             {navigation.map((item) => (
-              <Link
+              <button
                 key={item.name}
-                to={item.href}
-                className="max-w-xs text-white hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={() => handleNavigation(item.href, item.groupBy as 'project' | 'user')}
+                className="max-w-xs text-white hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium w-full text-left"
               >
                 {item.name}
-              </Link>
+              </button>
             ))}
           </div>
         </div>
