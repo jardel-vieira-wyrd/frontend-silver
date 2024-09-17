@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { useTaskStore } from '../stores/taskStore';
 import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
 import TaskDetailsModal from './TaskDetailsModal';
-import AddTask from './AddTask';
+import AddTask from '../blocks/AddTask';
 import { StatusText, getStatusColor, getPriorityColor } from '../utils/taskUtils';
-import { Button } from "@/components/ui/button";
+import { Button } from "@/assets/ui/button";
 
 function ProjectCards() {
   const { projects, fetchProjects, groupBy, setGroupBy } = useTaskStore();

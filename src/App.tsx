@@ -3,7 +3,7 @@ import Home from './pages/Home';
 import SignUp from './pages/SignUp';
 import SignIn from './pages/SignIn';
 import Taskboard from './pages/Taskboard';
-import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedRoute from './api/ProtectedRoute';
 import { useAuthStore } from './stores/authStore';
 
 function App() {

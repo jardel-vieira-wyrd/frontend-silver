@@ -3,9 +3,9 @@ import { X, Calendar, Clock, List, AlertCircle, User, Edit } from 'lucide-react'
 import { StatusText, getStatusColor } from '../utils/taskUtils';
 import { useAuthStore } from '../stores/authStore';
 import { useTaskStore } from '../stores/taskStore';
-import UserPermissionsModal from './UserPermissionsModal';
-import StatusSelectionModal from './StatusSelectionModal';
-import PrioritySelectionModal from './PrioritySelectionModal';
+import UserPermissionsModal from '../blocks/UserPermissionsModal';
+import StatusSelectionModal from '../blocks/StatusSelectionModal';
+import PrioritySelectionModal from '../blocks/PrioritySelectionModal';
 import { TaskStatus } from '../api/api';
 
 // Update the Task interface to include userPermissions

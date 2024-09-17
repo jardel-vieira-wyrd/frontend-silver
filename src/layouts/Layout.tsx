@@ -1,5 +1,5 @@
-import ApiHealthCheck from "./ApiHealthCheck";
-import Navbar from "./Navbar";
+import ApiHealthCheck from "../blocks/ApiHealthCheck";
+import Navbar from "../components/Navbar";
 
 interface LayoutProps {
   children: React.ReactNode;

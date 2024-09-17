@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../stores/authStore";
 import { useTaskStore } from "../stores/taskStore";
-import UserHeader from "./UserHeader";
+import UserHeader from "../blocks/UserHeader";
 import { Menu, X } from 'lucide-react';
 
 const navigation = [

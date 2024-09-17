@@ -1,6 +1,7 @@
 import React from 'react';
 import { tasks } from '../api/api';
 import { useTaskStore } from '../stores/taskStore';
+import { getPriorityColor } from '../utils/taskUtils';
 
 interface PrioritySelectionModalProps {
   taskId: number;
@@ -19,18 +20,6 @@ const PrioritySelectionModal: React.FC<PrioritySelectionModalProps> = ({ taskId,
     } catch (error) {
       console.error('Failed to update task priority:', error);
     }
-  };
-
-  const getPriorityColor = (priority: number) => {
-    const colors = [
-      'bg-white',
-      'bg-red-50',
-      'bg-red-100',
-      'bg-red-200',
-      'bg-red-300',
-      'bg-red-400'
-    ];
-    return colors[priority];
   };
 
   const effectiveCurrentPriority = currentPriority === null ? 0 : currentPriority;

@@ -38,7 +38,6 @@ interface TaskState {
 
 export const useTaskStore = create<TaskState>((set, get) => ({
   projects: {},
-  groupBy: undefined,
   setGroupBy: (groupBy: 'user' | 'project' | undefined) => {
     set({ groupBy });
   },
