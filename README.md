@@ -27,7 +27,7 @@ Please, before running the project, run the backend project in the following rep
    docker-compose up --build
    ```
 
-3. The application will be available at `http://localhost:5173`
+3. The application will be available at [localhost:5173](http://localhost:5173)
 
 ### Development
 
