@@ -60,18 +60,30 @@ function ProjectCards() {
               </div>
             </div>
             
-            {/* High Priority Task Box */}
-            {projects[projectName].length > 0 && (
-              <div className="w-[50%] p-3 bg-gray-100 rounded-md flex flex-col">
-                <p className="text-xs font-semibold text-gray-500 mb-1">High Priority Task</p>
-                <div 
-                  className="text-sm cursor-pointer hover:bg-gray-200 p-2 rounded flex justify-between items-center"
-                  onClick={() => openTaskDetails(projects[projectName][0].id)}
-                >
-                  <span className="font-medium truncate mr-2">{projects[projectName][0].title}</span>               
+            <div className="flex justify-between items-start mb-4">
+              {/* High Priority Task Box */}
+              {projects[projectName].length > 0 && (
+                <div className="w-[60%] p-3 bg-gray-100 rounded-md flex flex-col">
+                  <p className="text-xs font-semibold text-gray-500 mb-1">High Priority Task</p>
+                  <div 
+                    className="text-sm cursor-pointer hover:bg-gray-200 p-2 rounded flex justify-between items-center"
+                    onClick={() => openTaskDetails(projects[projectName][0].id)}
+                  >
+                    <span className="font-medium truncate mr-2">{projects[projectName][0].title}</span>               
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+              
+              {/* Add Task Button */}
+              {groupBy === 'project' && (
+                <Button
+                  className="bg-black text-white rounded-full w-28 h-10 text-xs hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center"
+                  onClick={() => handleAddTask(projectName)}
+                >
+                  <Plus className="h-6 w-6 mr-2" /> Add Task
+                </Button>
+              )}
+            </div>
 
             {expandedProjects[projectName] && (
               <ul className="mt-2 space-y-2 flex-grow">
@@ -93,14 +105,6 @@ function ProjectCards() {
                   </li>
                 ))}
               </ul>
-            )}
-            {groupBy === 'project' && (
-              <Button
-                className="absolute bottom-6 right-6 bg-black text-white rounded-full w-28 h-10 text-xs hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center"
-                onClick={() => handleAddTask(projectName)}
-              >
-                <Plus className="h-6 w-6 mr-2" /> Add Task
-              </Button>
             )}
           </div>
         ))}
